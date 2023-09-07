@@ -1,15 +1,20 @@
+import { ThirdwebProvider } from "../components/thirdweb-provider";
+
 import Navbar from 'components/layout/navbar';
 import { ensureStartsWith } from 'lib/utils';
 import { Inter } from 'next/font/google';
 import { ReactNode, Suspense } from 'react';
 import './globals.css';
 
-const { TWITTER_CREATOR, TWITTER_SITE, SITE_NAME } = process.env;
+const { TWITTER_CREATOR, TWITTER_SITE, SITE_NAME, NEXT_PUBLIC_THIRDWEB_API_CLIENTID } = process.env;
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
   ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
   : 'http://localhost:3000';
 const twitterCreator = TWITTER_CREATOR ? ensureStartsWith(TWITTER_CREATOR, '@') : undefined;
 const twitterSite = TWITTER_SITE ? ensureStartsWith(TWITTER_SITE, 'https://') : undefined;
+
+const activeChain = 'mumbai';
+const clientId = NEXT_PUBLIC_THIRDWEB_API_CLIENTID;
 
 export const metadata = {
   metadataBase: new URL(baseUrl),
@@ -38,7 +43,11 @@ const inter = Inter({
 });
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  return (
+    return (
+      		<ThirdwebProvider
+			activeChain={activeChain}
+			clientId={clientId}
+		>
     <html lang="en" className={inter.variable}>
       <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <Navbar />
@@ -47,5 +56,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         </Suspense>
       </body>
     </html>
+    </ThirdwebProvider>
   );
 }
